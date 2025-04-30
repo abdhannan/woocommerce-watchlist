@@ -1,0 +1,27 @@
+.wl-watchlist-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.wl-item {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+.wl-image img {
+  max-width: 120px;
+  height: auto;
+}
+.wl-info h3 {
+  margin: 0 0 0.5rem;
+}
+.wl-summary {
+  border-top: 2px solid #333;
+  padding-top: 1rem;
+}
+.wl-summary button {
+  margin-top: 1rem;
+  margin-right: 10px;
+}

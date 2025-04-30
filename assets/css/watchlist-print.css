@@ -1,0 +1,36 @@
+#wc-pdf-wrapper {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+#wc-pdf-wrapper .wl-item {
+  page-break-inside: avoid;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+#wc-pdf-wrapper .wl-info h3 {
+  margin: 5px 0;
+}
+
+#wc-pdf-wrapper .wl-summary {
+  margin-top: 30px;
+  font-weight: bold;
+}
+
+#wc-pdf-wrapper .wl-summary p {
+  margin: 5px 0;
+}
+
+/* Sembunyikan tombol hapus saat print/PDF */
+#wc-pdf-wrapper .remove-from-watchlist {
+  display: none !important;
+}
+
+@media print {
+  .remove-from-watchlist {
+    display: none !important;
+  }
+}
