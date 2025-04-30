@@ -15,7 +15,18 @@ class WL_Admin_Page {
             'dashicons-admin-generic',        // Icon
             80                                // Position
         );
+
+        add_submenu_page(
+            'watchlist-settings',
+            'Watchlist Dashboard',
+            'Watchlist Dashboard',
+            'manage_options',
+            'watchlist-dashboard',
+            [$this, 'render_dashboard']
+        );
+        
     }
+    
 
     public function register_settings() {
         // Group
@@ -109,6 +120,73 @@ class WL_Admin_Page {
         ]);
     }
     
+    /**
+     * render dashboard sub-menu page 
+     */
+    public function render_dashboard() {
+        $users = get_users(['fields' => ['ID', 'display_name', 'user_email']]);
+    
+        $product_counts = [];
+        $user_watchlist = [];
+    
+        foreach ($users as $user) {
+            $watchlist = get_user_meta($user->ID, '_watchlist_products', true);
+            if (!is_array($watchlist) || empty($watchlist)) continue;
+    
+            $user_watchlist[$user->ID] = $watchlist;
+    
+            foreach ($watchlist as $product_id) {
+                if (!isset($product_counts[$product_id])) {
+                    $product_counts[$product_id] = 0;
+                }
+                $product_counts[$product_id]++;
+            }
+        }
+    
+        arsort($product_counts); // urutkan produk dari yang paling banyak di-watch
+    
+        echo '<div class="wrap"><h1>Watchlist Dashboard</h1>';
+    
+        // Summary
+        echo '<h2>Summary</h2>';
+        echo '<ul>';
+        echo '<li>Total users with watchlist: <strong>' . count($user_watchlist) . '</strong></li>';
+        echo '<li>Total unique products in watchlists: <strong>' . count($product_counts) . '</strong></li>';
+        if ($product_counts) {
+            $top_product_id = array_key_first($product_counts);
+            $top_product = wc_get_product($top_product_id);
+            echo '<li>Top Product: <strong>' . $top_product->get_name() . '</strong> (' . $product_counts[$top_product_id] . ' users)</li>';
+        }
+        echo '</ul>';
+    
+        // Product Watch Counts
+        echo '<h2>Products in Watchlists</h2>';
+        echo '<table class="widefat striped"><thead><tr><th>Product</th><th>Count</th></tr></thead><tbody>';
+        foreach ($product_counts as $product_id => $count) {
+            $product = wc_get_product($product_id);
+            if (!$product) continue;
+            echo '<tr><td>' . $product->get_name() . ' (#' . $product_id . ')</td><td>' . $count . '</td></tr>';
+        }
+        echo '</tbody></table>';
+    
+        // User Details
+        echo '<h2>Users and Their Watchlists</h2>';
+        echo '<table class="widefat striped"><thead><tr><th>User</th><th>Products</th></tr></thead><tbody>';
+        foreach ($user_watchlist as $user_id => $products) {
+            $user = get_userdata($user_id);
+            echo '<tr><td>' . esc_html($user->display_name) . ' (' . esc_html($user->user_email) . ')</td><td>';
+            $names = [];
+            foreach ($products as $pid) {
+                $p = wc_get_product($pid);
+                if ($p) $names[] = $p->get_name();
+            }
+            echo implode(', ', $names);
+            echo '</td></tr>';
+        }
+        echo '</tbody></table>';
+    
+        echo '</div>';
+    }
     
     
 }
